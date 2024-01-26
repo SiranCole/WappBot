@@ -33,16 +33,19 @@ const everyoneCond = async (message) => {
   }
 };
 // CONDICIONAL 💩
-const poopCond = async (message) => {
-  if (message.body.includes("💩")) {
+const responsesCond = async (message) => {
+  if (message.body.includes("!comandos")) {
     const chat = await message.getChat();
 
-    await chat.sendMessage("🧻 Toma límpiate");
+    await chat.sendMessage(`Lista de comandos: 
+    
+    -@ everyone`);
   }
 };
 
 // OBTENER PERMISOS
-let permisos = { todos: [everyoneCond, poopCond] };
+let permisos = { todos: [everyoneCond] };
+let hay_permisos = false;
 
 if (fs.existsSync(".env")) {
   dotenv.config();
@@ -50,6 +53,7 @@ if (fs.existsSync(".env")) {
     "PRUEBA_CHAT_ID",
     "CAMARONES_CHAT_ID",
     "CAMARONES_CAGAN_CHAT_ID",
+    "GODSIPS_CHAT_ID",
   ];
   for (const variable of requiredVariables) {
     if (!process.env[variable]) {
@@ -57,9 +61,12 @@ if (fs.existsSync(".env")) {
       process.exit(1);
     }
   }
-  permisos[process.env.PRUEBA_CHAT_ID] = [everyoneCond, poopCond];
+  permisos[process.env.PRUEBA_CHAT_ID] = [everyoneCond, responsesCond];
   permisos[process.env.CAMARONES_CHAT_ID] = [everyoneCond];
-  permisos[process.env.CAMARONES_CAGAN_CHAT_ID] = [everyoneCond, poopCond];
+  permisos[process.env.CAMARONES_CAGAN_CHAT_ID] = [everyoneCond];
+  permisos[process.env.GODSIPS_CHAT_ID] = [everyoneCond];
+
+  hay_permisos = true;
 }
 
 // MENSAJE RECIBIDO
@@ -68,11 +75,19 @@ client.on("message", async (message) => {});
 // MENSAJE CREADO;
 client.on("message_create", async (message) => {
   let funcsPermitidas;
-  if (permisos[message.to]) {
-    funcsPermitidas = permisos[message.to];
+  console.log(message.id.remote);
+  console.log(message.body);
+  chatId = message.id.remote;
+  if (hay_permisos) {
+    if (permisos[chatId]) {
+      funcsPermitidas = permisos[chatId];
+    } else {
+      funcsPermitidas = [];
+    }
   } else {
     funcsPermitidas = permisos["todos"];
   }
+
   for (const func of funcsPermitidas) {
     func(message);
   }
