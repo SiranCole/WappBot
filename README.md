@@ -13,4 +13,3 @@ node index.js
 ## Mensajes comando
 Son mensajes que generan una respuesta del bot:
 - **@everyone** : se etiquetarán a todos los miembros del chat
-- **💩** : se retorna el mensaje "🧻 Toma límpiate"
